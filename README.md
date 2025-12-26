@@ -5,3 +5,4 @@ I'm keeping notes during December and January 2026 exam prep period.
 ## Table of Contents
 
 - [Application Load Balancer](application_load_balancer.md)
+- [S3](s3.md)
