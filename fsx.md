@@ -1,0 +1,1 @@
+Amazon FSx for Windows File Server supports Microsoft's Distributed File System (DFS) while Lustre does not (it's more geared to high performance computing on a Lustre (Lustre = linux + cluster) filesystem).
