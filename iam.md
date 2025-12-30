@@ -1,0 +1,1 @@
+Permissions boundaries set the maximum permissions that can be effectively granted to an IAM principal. So, even if we assign DynamoDBFullAccess to a user, for example, if a permissions boundary was set to DynamoDBReadOnly, the user granted DynamoDBFullAccess would be effectively limited to DynamoDBReadOnly due to the permissions boundary.
