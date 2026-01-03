@@ -1,0 +1,5 @@
+Multi-AZ RDS deployments can have one standby or two standby DB instances. When the deployment has one standby DB instance, it's called a Multi-AZ DB instance deployment. A Multi-AZ DB instance deployment has one standby DB instance that provides failover support, but doesn't serve read traffic. When the deployment has two standby DB instances, it's called a Multi-AZ DB cluster deployment. A Multi-AZ DB cluster deployment has standby DB instances that provide failover support and can also serve read traffic.
+
+In a multi-AZ instance deployment, AWS maintains a synchronous database replica in another AZ. However, you can't use this replica for serving read traffic (use a multi-AZ db cluster or a read replica instead). Note that, due to the synchronous nature of the replication, a multi-AZ instance deployment may have higher latency than a single-AZ deployment.
+
+A read-replica is a read-only copy of a DB instance. The source database for a read replica setup becomes the "primary" database, and after the read replica's creation, changes to the primary database get asynchronously written to the read replica.

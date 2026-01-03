@@ -1,1 +1,3 @@
 Instance store is used for ephemeral data. It's a local (physcially connected) disk often used for scratch, buffer, or other temp data that can be lost and potentially rebuilt if necessary. Contrast this to EBS or EFS which are network-connected storage volumes, technically speaking, but have higher durability and other properties. Note that instance store doesn't add additional cost to your EC2 bill because its cost is factored in to the instance price.
+
+Autoscaling may have a desired number of instances (to set an exact number of instances in your autoscaling group) or may have a minimum and maximum number of instances if you want to set a range for the number of instances in your autoscaling group.
