@@ -1,0 +1,1 @@
+AWS Lambda currently supports 1000 concurrent executions per AWS account per region.
