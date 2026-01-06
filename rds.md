@@ -3,3 +3,5 @@ Multi-AZ RDS deployments can have one standby or two standby DB instances. When 
 In a multi-AZ instance deployment, AWS maintains a synchronous database replica in another AZ. However, you can't use this replica for serving read traffic (use a multi-AZ db cluster or a read replica instead). Note that, due to the synchronous nature of the replication, a multi-AZ instance deployment may have higher latency than a single-AZ deployment.
 
 A read-replica is a read-only copy of a DB instance. The source database for a read replica setup becomes the "primary" database, and after the read replica's creation, changes to the primary database get asynchronously written to the read replica.
+
+Encryption on an RDS instance can happen at creation time, but there isn't a way to set encryption on an active database instance without a work-around. The work-around is take a snapshot of the database, copy it as an encrypted snapshot, and restore a database from the encryption snapshot.
