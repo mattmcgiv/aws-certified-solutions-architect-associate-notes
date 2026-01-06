@@ -2,4 +2,4 @@ Instance store is used for ephemeral data. It's a local (physcially connected) d
 
 Autoscaling may have a desired number of instances (to set an exact number of instances in your autoscaling group) or may have a minimum and maximum number of instances if you want to set a range for the number of instances in your autoscaling group.
 
-An AMI is always associated with a specific snapshot. The snapsho contains the data used to build the AMI.
+An AMI is always associated with a specific snapshot. The snapshot contains the data used to build the AMI.
