@@ -11,10 +11,6 @@ on:
     types: [created]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    branches-ignore:
-      - staging
-      - preProd
-      - main
   issues:
     types: [opened, assigned]
   pull_request_review:
@@ -41,7 +37,7 @@ jobs:
     steps:
       # Check out repository code for Claude to analyze and edit.
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
@@ -76,8 +72,11 @@ jobs:
   # Automatic PR review job.
   # Runs on PR lifecycle events to review each non-draft PR.
   claude-auto-pr-review:
-    # Skip drafts until the PR is ready for review.
-    if: github.event_name == 'pull_request' && !github.event.pull_request.draft
+    # Skip drafts until ready and skip PRs whose source branch is in the ignore list.
+    if: >-
+      github.event_name == 'pull_request' &&
+      !github.event.pull_request.draft &&
+      !contains(fromJson('["staging","preProd","main"]'), github.head_ref)
     runs-on: ubuntu-latest
     # Minimal access required for reading code and posting PR feedback.
     permissions:
@@ -88,7 +87,7 @@ jobs:
     steps:
       # Check out repository code for automated review.
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
