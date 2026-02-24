@@ -1,0 +1,110 @@
+# Workflow name shown in the GitHub Actions UI.
+name: Claude Code
+
+# Events that can start this workflow:
+# - Mention-based events for explicit `@claude` requests
+# - PR lifecycle events for automatic review
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches-ignore:
+      - staging
+      - preProd
+      - main
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  # Mention-driven Claude assistant job.
+  # Runs only when `@claude` appears in a supported comment/review/issue.
+  claude:
+    # Guard execution to explicit invocations only.
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    runs-on: ubuntu-latest
+    # Keep comment/review abilities, but block repository writes and merges.
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read # Required for Claude to read CI results on PRs
+    steps:
+      # Check out repository code for Claude to analyze and edit.
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      # Run Claude in mention-triggered mode.
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          # Optional: Customize the trigger phrase (default: @claude)
+          # trigger_phrase: "/claude"
+
+          # Optional: Trigger when specific user is assigned to an issue
+          # assignee_trigger: "claude-bot"
+
+          # Optional: Configure Claude's behavior with CLI arguments
+          # claude_args: |
+          #   --model claude-opus-4-1-20250805
+          #   --max-turns 10
+          #   --allowedTools "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
+          #   --system-prompt "Follow our coding standards. Ensure all new code has tests. Use TypeScript for new files."
+
+          # Optional: Advanced settings configuration
+          # settings: |
+          #   {
+          #     "env": {
+          #       "NODE_ENV": "test"
+          #     }
+          #   }
+
+  # Automatic PR review job.
+  # Runs on PR lifecycle events to review each non-draft PR.
+  claude-auto-pr-review:
+    # Skip drafts until the PR is ready for review.
+    if: github.event_name == 'pull_request' && !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    # Minimal access required for reading code and posting PR feedback.
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+      actions: read
+    steps:
+      # Check out repository code for automated review.
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      # Run Claude with a fixed review prompt for consistent PR feedback.
+      - name: Run Claude Code auto review
+        id: claude-auto-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Please review this pull request and post feedback directly on GitHub.
+            Focus on:
+            - Correctness and potential bugs
+            - Security and data handling risks
+            - Performance concerns
+            - Missing tests or edge-case coverage
