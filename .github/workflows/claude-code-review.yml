@@ -97,13 +97,17 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          use_sticky_comment: true
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            Please review this pull request and post feedback directly on GitHub.
+            Please review this pull request and post your review as a comment on this PR.
+            Update your existing Claude comment on re-runs instead of creating duplicates.
             Focus on:
             - Correctness and potential bugs
             - Security and data handling risks
             - Performance concerns
             - Missing tests or edge-case coverage
+            - Race conditions
+            - Logical gaps in the implementation
